@@ -9,6 +9,7 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 from datetime import datetime
+from datetime import timedelta
 
 try:
     import argparse
@@ -56,37 +57,66 @@ def main():
 
     def par_sheet(values):
         values
-        teams = [];
+        shifts = []
+        this_week = False
         for irow, row in enumerate(values):
             # look for the first row that has saturday in column A
-            if row[0].rstrip().lstrip().upper() == 'SATURDAY':
-                week_1 = dict(row_0 = irow, days = dict())
-                for col in row:
-                    trimmed = col.rstrip().lstrip()
-                    #checks for weekdays by finding alpha strings
-                    if trimmed.isalpha() == True:
-                        weekday = trimmed
-                    elif trimmed != '' and '/' in trimmed:
-                        print('\n\n\n')
-                        print(trimmed)
-                        print(row)
-                        #split parts apart to add leading zeros to month\day
-                        spl = trimmed.split("/", 2)
-                        if len(spl[0]) != 2:
-                            spl[0] =  '0' + spl[0] 
-                        if len(spl[1]) != 2:
-                            spl[1] = '0' + spl[1]
-                        time = datetime.strptime("/".join(spl), "%m/%d/%Y")
-                        week_1['days'][weekday] = time
-                return week_1   
+            # import pdb; pdb.set_trace()
+            if len(row) > 0:    
+                if row[0].rstrip().lstrip().upper() == 'SATURDAY':
+                    weekdays = []
+                    for col in row:
+                        trimmed = col.rstrip().lstrip()
+                        #checks for weekdays by finding alpha strings
+                        if trimmed.isalpha() == True:
+                            weekday = trimmed
+                        elif trimmed != '' and '/' in trimmed:
+                            print('\n\n\n')
+                            print(trimmed)
+                            print(row)
+                            #split parts apart to add leading zeros to month\day
+                            spl = trimmed.split("/", 2)
+                            if len(spl[0]) != 2:
+                                spl[0] =  '0' + spl[0] 
+                            if len(spl[1]) != 2:
+                                spl[1] = '0' + spl[1]
+                            date = datetime.strptime("/".join(spl), "%m/%d/%Y")
+                            weekdays.append((date, weekday))
+                    this_week = weekdays  
 
-            else:
-                rowlen = len(row)
-                print(rowlen)
-                print(row[0])
-                print(row[rowlen - 1])
+                elif this_week:
+                    counter = 0
+                    shift = ()
+                    row_shifts = []
 
+                    for col in row:
+                        shift = *shift, col
+                        counter += 1
+                        if counter >= 3:
+                            row_shifts.append(shift)
+                            counter = 0
+                            shift = ()
 
+                    for ishift, shift in enumerate(row_shifts):
+                        if ishift < len(this_week):
+                           date, weekday = this_week[ishift]
+                           start_str, end_str = shift[2].split('-', 1)
+                           start_hours, start_minutes = start_str.split(':', 1)
+                           end_hours, end_minutes = end_str.split(':', 1)
+                           start_hours = int(start_hours)
+                           start_minutes = int(start_minutes)
+                           end_hours = int(end_hours)
+                           end_minutes = int(end_minutes)
+                           start_time = date + timedelta(hours=start_hours, minutes =start_minutes)
+                           end_time = date + timedelta(hours=end_hours, minutes =end_minutes)
+                           shifts.append(dict(name = shift[0],
+                                shift_length=shift[1],
+                                start= start_time,
+                                end = end_time))
+                           # import pdb; pdb.set_trace()
+
+                        
+                    
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
@@ -117,7 +147,7 @@ def main():
             currentSchedule = service.spreadsheets().values().get(
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
             values = currentSchedule.get('values', [])
-            week_1 = par_sheet(values)
+            days = par_sheet(values)
             import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
