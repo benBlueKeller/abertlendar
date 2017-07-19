@@ -99,21 +99,34 @@ def main():
 
                     for ishift, shift in enumerate(row_shifts):
                         if ishift < len(this_week):
-                           date, weekday = this_week[ishift]
-                           start_str, end_str = shift[2].split('-', 1)
-                           start_hours, start_minutes = start_str.split(':', 1)
-                           end_hours, end_minutes = end_str.split(':', 1)
-                           start_hours = int(start_hours)
-                           start_minutes = int(start_minutes)
-                           end_hours = int(end_hours)
-                           end_minutes = int(end_minutes)
-                           start_time = date + timedelta(hours=start_hours, minutes =start_minutes)
-                           end_time = date + timedelta(hours=end_hours, minutes =end_minutes)
-                           shifts.append(dict(name = shift[0],
-                                shift_length=shift[1],
+                            date, weekday = this_week[ishift]
+                            time_str = shift[2].strip()
+                            if " " in time_str: time_str, duty = time_str.split(" ", 1)
+                            start_str, end_str = time_str.split('-', 1)
+                            start_hours, start_minutes = start_str.split(':', 1)
+                            start_hours = int(start_hours)
+                            start_minutes = int(start_minutes)
+                            if start_hours < 9: # assuming nine is the ealiest and 8 the latest start
+                                start_hours += 12
+                            start_time = date + timedelta(hours=start_hours, minutes=start_minutes)
+                            try:
+                                end_hours, end_minutes = end_str.split(':', 1)
+                                end_hours = int(end_hours) + 12 # assuming all shifts end in pm
+                                end_minutes = int(end_minutes)
+                                end_time = date + timedelta(hours=end_hours, minutes=end_minutes)
+                            except ValueError: # for line and close shifts parse from length
+                                try:
+                                    hours_from_start = float(shift[1])
+                                    if hours_from_start >= 6:
+                                        hours_from_start += 0.5 # length does not include breaks
+                                except ValueError:
+                                    import pdb; pdb.set_trace()
+                            shifts.append(dict(name = shift[0],
+                                length=shift[1],
                                 start= start_time,
-                                end = end_time))
-                           # import pdb; pdb.set_trace()
+                                end = end_time,
+                                time_str = time_str))
+        return shifts
 
                         
                     
