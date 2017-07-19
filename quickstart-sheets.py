@@ -98,7 +98,7 @@ def main():
                             shift = ()
 
                     for ishift, shift in enumerate(row_shifts):
-                        if ishift < len(this_week):
+                        if ishift < len(this_week) and "-" in shift[2]:
                             date, weekday = this_week[ishift]
                             time_str = shift[2].strip()
                             if " " in time_str: time_str, duty = time_str.split(" ", 1)
@@ -119,8 +119,9 @@ def main():
                                     hours_from_start = float(shift[1])
                                     if hours_from_start >= 6:
                                         hours_from_start += 0.5 # length does not include breaks
+                                    end_time = start_time + timedelta(hours=hours_from_start)
                                 except ValueError:
-                                    import pdb; pdb.set_trace()
+                                    end_time = start_time + timedelta(hours=1)
                             shifts.append(dict(name = shift[0],
                                 length=shift[1],
                                 start= start_time,
@@ -160,7 +161,7 @@ def main():
             currentSchedule = service.spreadsheets().values().get(
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
             values = currentSchedule.get('values', [])
-            days = par_sheet(values)
+            shifts = par_sheet(values)
             import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
