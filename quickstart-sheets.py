@@ -61,7 +61,6 @@ def main():
         this_week = False
         for irow, row in enumerate(values):
             # look for the first row that has saturday in column A
-            # import pdb; pdb.set_trace()
             if len(row) > 0:    
                 if row[0].rstrip().lstrip().upper() == 'SATURDAY':
                     weekdays = []
