@@ -136,13 +136,14 @@ def main():
                     'version=v4')
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
+    cal_service = discovery.build('calendar', 'v3', http=http)
 
     scheduleId ='1xJcLh9yWGmqu_Blnp4yykb4cSnnus5fU4YoHFqGEf-o'
     schedule = service.spreadsheets().get(spreadsheetId=scheduleId).execute()
     scheduleSheets = schedule['sheets']
     for sheet in scheduleSheets:
         print(sheet['properties'])
-        if sheet['properties']['title'].find("CURRENT") > -1:
+        if sheet['properties']['title'].find("CURRENT") > -1 or sheet['properties']['title'].find("NEXT") > -1:
             currentSchedule = service.spreadsheets().values().get(
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
             values = currentSchedule.get('values', [])
@@ -150,7 +151,20 @@ def main():
             for shift in shifts:
                 if "BEN" in shift["name"].upper():
                     print(shift)
-                    pass 
+                    #create an id that will identical, but constant, for each shift to avoid repeat events
+                    event = {
+                        'summary': "Salty Shift " + shift["time_str"],
+                        'start': {
+                            'dateTime': shift["start"].isoformat(),
+                            'timeZone': "America/Los_Angeles"
+                        },
+                        'end': {
+                            'dateTime': shift["end"].isoformat(),
+                            'timeZone': "America/Los_Angeles"
+                        }
+                    }
+                    event = cal_service.events().insert(calendarId='primary', body=event).execute()
+                    print('Event created: {}'.format(event.get('htmlLink')))
             import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
