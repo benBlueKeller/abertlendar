@@ -152,20 +152,24 @@ def main():
                 if "BEN" in shift["name"].upper():
                     print(shift)
                     #create an id that will identical, but constant, for each shift to avoid repeat events
-                    event = {
-                        'summary': "Salty Shift " + shift["time_str"],
-                        'start': {
-                            'dateTime': shift["start"].isoformat(),
-                            'timeZone': "America/Los_Angeles"
-                        },
-                        'end': {
-                            'dateTime': shift["end"].isoformat(),
-                            'timeZone': "America/Los_Angeles"
+                    id = ('saltyshift' + str(shift['start'].toordinal()) + 
+                        str(shift['start'].hour) + str(shift['start'].minute) + 
+                        str(shift['end'].hour) + str(shift['end'].minute))
+                    import pdb; pdb.set_trace()
+                    if not exists:
+                        event = {
+                            'summary': "Salty Shift " + shift["time_str"],
+                            'start': {
+                                'dateTime': shift["start"].isoformat(),
+                                'timeZone': "America/Los_Angeles"
+                            },
+                            'end': {
+                                'dateTime': shift["end"].isoformat(),
+                                'timeZone': "America/Los_Angeles"
+                            }
                         }
-                    }
-                    event = cal_service.events().insert(calendarId='primary', body=event).execute()
-                    print('Event created: {}'.format(event.get('htmlLink')))
-            import pdb; pdb.set_trace()
+                        event = cal_service.events().insert(calendarId='primary', body=event).execute()
+                        print('Event created: {}'.format(event.get('htmlLink')))
 
 if __name__ == '__main__':
     main()
