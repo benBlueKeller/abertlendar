@@ -156,9 +156,11 @@ def main():
                         str(shift['start'].hour) + str(shift['start'].minute) + 
                         str(shift['end'].hour) + str(shift['end'].minute))
                     import pdb; pdb.set_trace()
+                    
                     if not exists:
                         event = {
                             'summary': "Salty Shift " + shift["time_str"],
+                            'id': id,
                             'start': {
                                 'dateTime': shift["start"].isoformat(),
                                 'timeZone': "America/Los_Angeles"
