@@ -19,7 +19,7 @@ except ImportError:
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
-SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
+SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/calendar'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Google Sheets API Python Quickstart'
 
@@ -161,6 +161,10 @@ def main():
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
             values = currentSchedule.get('values', [])
             shifts = par_sheet(values)
+            for shift in shifts:
+                if "BEN" in shift["name"].upper():
+                    print(shift)
+                    pass 
             import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
