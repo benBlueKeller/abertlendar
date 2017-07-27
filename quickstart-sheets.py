@@ -184,8 +184,17 @@ def main():
                         }
                     }
 
-                    shared_time_events = cal_service.events().list(calendarId='primary', timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()        
+                    shared_time_events = cal_service.events().list(calendarId='primary', timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
+                    items = shared_time_events.get('items', []) 
+                    for shared_event in items:
+                        if event['id'] == shared_event['id']:
+                            exists = True
+                            print('ID exists:\n' + shared_event['id'])
                     import pdb; pdb.set_trace()
+
+
+
+
                     
                     if not exists:
                         event = cal_service.events().insert(calendarId='primary', body=event).execute()
