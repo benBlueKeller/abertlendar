@@ -7,15 +7,26 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
+# begin own imports seperate 
+
+import sys
 
 from datetime import datetime
 from datetime import timedelta
+import pytz
 
-try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-except ImportError:
-    flags = None
+
+import pdb; pdb.set_trace();
+
+
+#oauth argparser
+# try:
+#     import argparse
+#     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+# except ImportError:
+#     flags = None
+flags = None
+
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
@@ -148,28 +159,35 @@ def main():
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
             values = currentSchedule.get('values', [])
             shifts = par_sheet(values)
+            pst = pytz.timezone('US/Pacific')
             for shift in shifts:
                 if "BEN" in shift["name"].upper():
                     print(shift)
                     #create an id that will identical, but constant, for each shift to avoid repeat events
-                    id = ('saltyshift' + str(shift['start'].toordinal()) + 
+                    id = ('saltshift' + str(shift['start'].toordinal()) + 
                         str(shift['start'].hour) + str(shift['start'].minute) + 
                         str(shift['end'].hour) + str(shift['end'].minute))
+                    exists = False
+
+                    # add PST to timezones
+                    shift['start'] = pst.localize(shift['start'])
+                    shift['end'] = pst.localize(shift['end'])
+
+                    event = {
+                        'summary': "Salty Shift " + shift["time_str"],
+                        'id': id,
+                        'start': {
+                            'dateTime': shift["start"].isoformat()
+                        },
+                        'end': {
+                            'dateTime': shift["end"].isoformat()
+                        }
+                    }
+
+                    shared_time_events = cal_service.events().list(calendarId='primary', timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()        
                     import pdb; pdb.set_trace()
                     
                     if not exists:
-                        event = {
-                            'summary': "Salty Shift " + shift["time_str"],
-                            'id': id,
-                            'start': {
-                                'dateTime': shift["start"].isoformat(),
-                                'timeZone': "America/Los_Angeles"
-                            },
-                            'end': {
-                                'dateTime': shift["end"].isoformat(),
-                                'timeZone': "America/Los_Angeles"
-                            }
-                        }
                         event = cal_service.events().insert(calendarId='primary', body=event).execute()
                         print('Event created: {}'.format(event.get('htmlLink')))
 
