@@ -136,7 +136,8 @@ def main():
                                 length=shift[1],
                                 start= start_time,
                                 end = end_time,
-                                time_str = time_str))
+                                time_str = time_str,
+                                row = irow))
         return shifts
 
                         
@@ -164,7 +165,8 @@ def main():
                 if "BEN" in shift["name"].upper():
                     print(shift)
                     #create an id that will identical, but constant, for each shift to avoid repeat events
-                    id = ('saltshift' + str(shift['start'].toordinal()) + 
+                    id = ('salt' + str(shift['row']) +
+                        'shift' + str(shift['start'].toordinal()) + 
                         str(shift['start'].hour) + str(shift['start'].minute) + 
                         str(shift['end'].hour) + str(shift['end'].minute))
                     exists = False
@@ -197,8 +199,8 @@ def main():
 
                     
                     if not exists:
-                        event = cal_service.events().insert(calendarId='primary', body=event).execute()
-                        print('Event created: {}'.format(event.get('htmlLink')))
+                        cal_event = cal_service.events().insert(calendarId='primary', body=event).execute()
+                        print('Event created: {}'.format(cal_event.get('htmlLink')))
 
 if __name__ == '__main__':
     main()
