@@ -143,14 +143,14 @@ def main():
     def par_sheet_dict(values):
         shifts = par_sheet(values)
         scoopers = set()
-        time_min = shifts[0]["start_time"]
-        time_max = shifts[0]["end_time"]
+        time_min = shifts[0]["start"]
+        time_max = shifts[0]["end"]
         for shift in shifts:
-            scoopers.union([shift["name"].upper()])
-            if time_min < shift["start_time"]:
-                time_min = shift["start_time"]
-            if time_max > shift["end_time"]:
-                time_max = shift["end_time"]
+            scoopers = scoopers.union([shift["name"].upper()])
+            if time_min < shift["start"]:
+                time_min = shift["start"]
+            if time_max > shift["end"]:
+                time_max = shift["end"]
         return dict(shifts=shifts, scoopers=scoopers, time_max=time_max, time_min=time_min)
 
     credentials = get_credentials()
@@ -165,16 +165,24 @@ def main():
     scheduleSheets = schedule['sheets']
 
     cal_service = discovery.build('calendar', 'v3', http=http)
-    cal_list = cal_service.calendarList().list().execute()
     # TODO: using argv, find or make proper calendar to operate on
+    if '--primary' in sys.argv:
+        cal_id = 'primary'
+    else:
+        cal_list = cal_service.calendarList().list().execute()['items']
+        cal_id = False
+
     for sheet in scheduleSheets:
         print(sheet['properties'])
         if sheet['properties']['title'].find("CURRENT") > -1 or sheet['properties']['title'].find("NEXT") > -1:
             currentSchedule = service.spreadsheets().values().get(
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
             values = currentSchedule.get('values', [])
-            shifts = par_sheet(values)
+            schedule = par_sheet_dict(values)
+            shifts = schedule['shifts']
             pst = pytz.timezone('US/Pacific')
+            pdb.set_trace()
+
 
             for shift in shifts:
                 if "BEN" in shift["name"].upper():
