@@ -7,8 +7,7 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
-# begin own imports seperate 
-
+# begin own imports seperate
 import sys
 
 from datetime import datetime
@@ -26,6 +25,8 @@ import pdb; pdb.set_trace();
 # except ImportError:
 #     flags = None
 flags = None
+
+
 
 
 # If modifying these scopes, delete your previously saved credentials
@@ -59,7 +60,7 @@ def get_credentials():
         if flags:
             credentials = tools.run_flow(flow, store, flags)
         else: # Needed only for compatibility with Python 2.6
-            credentials = tools.run(flow, store)
+            credentials = tools.run_flow(flow, store)
         print('Storing credentials to ' + credential_path)
     return credentials
 
@@ -67,12 +68,11 @@ def main():
 
 
     def par_sheet(values):
-        values
         shifts = []
         this_week = False
         for irow, row in enumerate(values):
             # look for the first row that has saturday in column A
-            if len(row) > 0:    
+            if len(row) > 0:
                 if row[0].rstrip().lstrip().upper() == 'SATURDAY':
                     weekdays = []
                     for col in row:
@@ -87,25 +87,25 @@ def main():
                             #split parts apart to add leading zeros to month\day
                             spl = trimmed.split("/", 2)
                             if len(spl[0]) != 2:
-                                spl[0] =  '0' + spl[0] 
+                                spl[0] =  '0' + spl[0]
                             if len(spl[1]) != 2:
                                 spl[1] = '0' + spl[1]
                             date = datetime.strptime("/".join(spl), "%m/%d/%Y")
                             weekdays.append((date, weekday))
-                    this_week = weekdays  
+                    this_week = weekdays
 
                 elif this_week:
                     counter = 0
-                    shift = ()
+                    shift = []
                     row_shifts = []
 
                     for col in row:
-                        shift = *shift, col
+                        shift.append(col)
                         counter += 1
                         if counter >= 3:
                             row_shifts.append(shift)
                             counter = 0
-                            shift = ()
+                            shift = []
 
                     for ishift, shift in enumerate(row_shifts):
                         if ishift < len(this_week) and "-" in shift[2]:
@@ -140,19 +140,33 @@ def main():
                                 row = irow))
         return shifts
 
-                        
-                    
+    def par_sheet_dict(values):
+        shifts = par_sheet(values)
+        scoopers = set()
+        time_min = shifts[0]["start_time"]
+        time_max = shifts[0]["end_time"]
+        for shift in shifts:
+            scoopers.union([shift["name"].upper()])
+            if time_min < shift["start_time"]:
+                time_min = shift["start_time"]
+            if time_max > shift["end_time"]:
+                time_max = shift["end_time"]
+        return dict(shifts=shifts, scoopers=scoopers, time_max=time_max, time_min=time_min)
+
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
                     'version=v4')
+
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
-    cal_service = discovery.build('calendar', 'v3', http=http)
-
     scheduleId ='1xJcLh9yWGmqu_Blnp4yykb4cSnnus5fU4YoHFqGEf-o'
     schedule = service.spreadsheets().get(spreadsheetId=scheduleId).execute()
     scheduleSheets = schedule['sheets']
+
+    cal_service = discovery.build('calendar', 'v3', http=http)
+    cal_list = cal_service.calendarList().list().execute()
+    # TODO: using argv, find or make proper calendar to operate on
     for sheet in scheduleSheets:
         print(sheet['properties'])
         if sheet['properties']['title'].find("CURRENT") > -1 or sheet['properties']['title'].find("NEXT") > -1:
@@ -161,13 +175,14 @@ def main():
             values = currentSchedule.get('values', [])
             shifts = par_sheet(values)
             pst = pytz.timezone('US/Pacific')
+
             for shift in shifts:
                 if "BEN" in shift["name"].upper():
                     print(shift)
                     #create an id that will identical, but constant, for each shift to avoid repeat events
                     id = ('salt' + str(shift['row']) +
-                        'shift' + str(shift['start'].toordinal()) + 
-                        str(shift['start'].hour) + str(shift['start'].minute) + 
+                        'shift' + str(shift['start'].toordinal()) +
+                        str(shift['start'].hour) + str(shift['start'].minute) +
                         str(shift['end'].hour) + str(shift['end'].minute))
                     exists = False
 
@@ -187,17 +202,16 @@ def main():
                     }
 
                     shared_time_events = cal_service.events().list(calendarId='primary', timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
-                    items = shared_time_events.get('items', []) 
+                    items = shared_time_events.get('items', [])
                     for shared_event in items:
                         if event['id'] == shared_event['id']:
                             exists = True
                             print('ID exists:\n' + shared_event['id'])
-                    import pdb; pdb.set_trace()
 
 
 
 
-                    
+
                     if not exists:
                         cal_event = cal_service.events().insert(calendarId='primary', body=event).execute()
                         print('Event created: {}'.format(cal_event.get('htmlLink')))
