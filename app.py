@@ -147,9 +147,9 @@ def main():
         time_max = shifts[0]["end"]
         for shift in shifts:
             scoopers = scoopers.union([shift["name"].upper()])
-            if time_min < shift["start"]:
+            if shift["start"] < time_min:
                 time_min = shift["start"]
-            if time_max > shift["end"]:
+            if shift["end"] > time_max:
                 time_max = shift["end"]
         return dict(shifts=shifts, scoopers=scoopers, time_max=time_max, time_min=time_min)
 
@@ -157,6 +157,7 @@ def main():
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
                     'version=v4')
+
 
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
@@ -172,6 +173,7 @@ def main():
         cal_list = cal_service.calendarList().list().execute()['items']
         cal_id = False
 
+
     for sheet in scheduleSheets:
         print(sheet['properties'])
         if sheet['properties']['title'].find("CURRENT") > -1 or sheet['properties']['title'].find("NEXT") > -1:
@@ -182,6 +184,22 @@ def main():
             shifts = schedule['shifts']
             pst = pytz.timezone('US/Pacific')
             pdb.set_trace()
+
+
+            if not cal_id:
+                count = 0
+                for cal in cal_list:
+                    if cal['summary'].find('alberlendar') > -1:
+                        if count > 0:
+                            for arg in sys.argv:
+                                if arg.find('-') == -1 and cal['summary'].split(' ')[0].find(arg) > -1:
+                                    cal_id = cal['id']
+                        cal_id = cal['id']
+                        count += 1
+                if not cal_id:
+                    input('would you like to make a new calendar: ')
+
+
 
 
             for shift in shifts:
