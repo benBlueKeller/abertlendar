@@ -64,6 +64,20 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
+def scooper_match(query_scooper, possible_match):
+    query_scooper = query_scooper.upper()
+    split_scooper = possible_match.upper().split(' ')
+    check = ''
+    for i, word in enumerate(split_scooper):
+        if len(check) > 0:
+            check += ' '
+        check += split_scooper[i]
+        if check == query_scooper:
+            return True
+    return False
+
+
+
 def main():
 
 
@@ -185,6 +199,13 @@ def main():
             pst = pytz.timezone('US/Pacific')
             pdb.set_trace()
 
+            this_scooper = False
+            for scooper in schedule['scoopers']:
+                for arg in sys.argv:
+                    if scooper_match(arg, scooper):
+                        this_scooper = arg
+            while not this_scooper:
+                this_scooper = input("What is your name on the schedule? ")
 
             if not cal_id:
                 count = 0
@@ -197,7 +218,14 @@ def main():
                         cal_id = cal['id']
                         count += 1
                 if not cal_id:
-                    input('would you like to make a new calendar: ')
+                    make_new = input('should I add a new calendar to google?(y/n): ')[0].upper()
+                    if make_new == 'Y':
+                        # make new calendar
+                        pass
+                    elif make_new == 'N':
+                        use_primary = input('should I use your primary calendar?(y/n): ')[0].upper()
+                        if use_primary == 'Y':
+                            cal_id = 'primary'
 
 
 
