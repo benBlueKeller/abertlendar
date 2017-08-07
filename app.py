@@ -203,7 +203,7 @@ def main():
             for scooper in schedule['scoopers']:
                 for arg in sys.argv:
                     if scooper_match(arg, scooper):
-                        this_scooper = arg
+                        this_scooper = arg 
             while not this_scooper:
                 this_scooper = input("What is your name on the schedule? ")
 
@@ -220,7 +220,13 @@ def main():
                 if not cal_id:
                     make_new = input('should I add a new calendar to google?(y/n): ')[0].upper()
                     if make_new == 'Y':
-                        # make new calendar
+                        def capitalize(name):
+                            return name[0].upper() + name[1:].lower()
+                        calendar = {
+                            "summary": capitalize(this_scooper) + "'s alberlendar"
+                            "timeZone": "US/Los_Angeles"
+                        }
+                        cal_service.calendar().insert(body=calendar, http=http).execute()
                         pass
                     elif make_new == 'N':
                         use_primary = input('should I use your primary calendar?(y/n): ')[0].upper()
