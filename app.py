@@ -197,7 +197,6 @@ def main():
             schedule = par_sheet_dict(values)
             shifts = schedule['shifts']
             pst = pytz.timezone('US/Pacific')
-            pdb.set_trace()
 
             this_scooper = False
             for scooper in schedule['scoopers']:
@@ -223,10 +222,10 @@ def main():
                         def capitalize(name):
                             return name[0].upper() + name[1:].lower()
                         calendar = {
-                            "summary": capitalize(this_scooper) + "'s alberlendar"
-                            "timeZone": "US/Los_Angeles"
+                            "summary": capitalize(this_scooper) + "'s alberlendar",
+                            "timeZone": "America/Los_Angeles"
                         }
-                        cal_service.calendar().insert(body=calendar, http=http).execute()
+                        cal_service.calendars().insert(body=calendar).execute()
                         pass
                     elif make_new == 'N':
                         use_primary = input('should I use your primary calendar?(y/n): ')[0].upper()
@@ -261,7 +260,8 @@ def main():
                         }
                     }
 
-                    shared_time_events = cal_service.events().list(calendarId='primary', timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
+                    
+                    shared_time_events = cal_service.events().list(calendarId=cal_id, timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
                     items = shared_time_events.get('items', [])
                     for shared_event in items:
                         if event['id'] == shared_event['id']:
@@ -273,7 +273,7 @@ def main():
 
 
                     if not exists:
-                        cal_event = cal_service.events().insert(calendarId='primary', body=event).execute()
+                        cal_event = cal_service.events().insert(calendarId=cal_id, body=event).execute()
                         print('Event created: {}'.format(cal_event.get('htmlLink')))
 
 if __name__ == '__main__':
