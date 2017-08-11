@@ -64,17 +64,7 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
-def scooper_match(query_scooper, possible_match):
-    query_scooper = query_scooper.upper()
-    split_scooper = possible_match.upper().split(' ')
-    check = ''
-    for i, word in enumerate(split_scooper):
-        if len(check) > 0:
-            check += ' '
-        check += split_scooper[i]
-        if check == query_scooper:
-            return True
-    return False
+from util import scooper_match
 
 
 
@@ -126,6 +116,7 @@ def main():
                             date, weekday = this_week[ishift]
                             time_str = shift[2].strip()
                             if " " in time_str: time_str, duty = time_str.split(" ", 1)
+                            # BUG: ValueError; no '-' in time_str
                             start_str, end_str = time_str.split('-', 1)
                             start_hours, start_minutes = start_str.split(':', 1)
                             start_hours = int(start_hours)
@@ -202,7 +193,7 @@ def main():
             for scooper in schedule['scoopers']:
                 for arg in sys.argv:
                     if scooper_match(arg, scooper):
-                        this_scooper = arg 
+                        this_scooper = arg
             while not this_scooper:
                 this_scooper = input("What is your name on the schedule? ")
 
@@ -260,7 +251,7 @@ def main():
                         }
                     }
 
-                    
+
                     shared_time_events = cal_service.events().list(calendarId=cal_id, timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
                     items = shared_time_events.get('items', [])
                     for shared_event in items:
