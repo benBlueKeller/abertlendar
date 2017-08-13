@@ -85,9 +85,6 @@ def main():
                         if trimmed.isalpha() == True:
                             weekday = trimmed
                         elif trimmed != '' and '/' in trimmed:
-                            print('\n\n\n')
-                            print(trimmed)
-                            print(row)
                             #split parts apart to add leading zeros to month\day
                             spl = trimmed.split("/", 2)
                             if len(spl[0]) != 2:
@@ -232,7 +229,6 @@ def main():
 
             for shift in shifts:
                 if "BEN" in shift["name"].upper():
-                    print(shift)
                     #create an id that will identical, but constant, for each shift to avoid repeat events
                     id = ('salt' + str(shift['row']) +
                         'shift' + str(shift['start'].toordinal()) +
