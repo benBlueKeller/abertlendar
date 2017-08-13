@@ -115,15 +115,19 @@ def main():
                         if ishift < len(this_week) and "-" in shift[2]:
                             date, weekday = this_week[ishift]
                             time_str = shift[2].strip()
-                            if " " in time_str: time_str, duty = time_str.split(" ", 1)
-                            # BUG: ValueError; no '-' in time_str
-                            start_str, end_str = time_str.split('-', 1)
-                            start_hours, start_minutes = start_str.split(':', 1)
-                            start_hours = int(start_hours)
-                            start_minutes = int(start_minutes)
-                            if start_hours < 9: # assuming nine is the ealiest and 8 the latest start
-                                start_hours += 12
-                            start_time = date + timedelta(hours=start_hours, minutes=start_minutes)
+                            if " " in time_str and not "@" in time_str: 
+                                time_str, duty = time_str.split(" ", 1)
+                            # BUG: ValueError; for format "@ # #:##-{}" start_time will be wrong
+                            try:
+                                start_str, end_str = time_str.split('-', 1)
+                                start_hours, start_minutes = start_str.split(':', 1)
+                                start_hours = int(start_hours)
+                                start_minutes = int(start_minutes)
+                                if start_hours < 9: # assuming nine is the ealiest and 8 the latest start
+                                    start_hours += 12
+                                start_time = date + timedelta(hours=start_hours, minutes=start_minutes)
+                            except ValueError:
+                                pdb.set_trace()
                             try:
                                 end_hours, end_minutes = end_str.split(':', 1)
                                 end_hours = int(end_hours) + 12 # assuming all shifts end in pm
