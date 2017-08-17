@@ -225,9 +225,9 @@ def main():
 
 
             for shift in shifts:
-                if "BEN" in shift["name"].upper():
+                if this_scooper in shift["name"].upper():
                     #create an id that will identical, but constant, for each shift to avoid repeat events
-                    id = ('salt' + str(shift['row']) +
+                    event_id = ('salt' + str(shift['row']) +
                         'shift' + str(shift['start'].toordinal()) +
                         str(shift['start'].hour) + str(shift['start'].minute) +
                         str(shift['end'].hour) + str(shift['end'].minute))
@@ -239,7 +239,7 @@ def main():
 
                     event = {
                         'summary': "Salty Shift " + shift["time_str"],
-                        'id': id,
+                        'id': event_id,
                         'start': {
                             'dateTime': shift["start"].isoformat()
                         },
