@@ -224,6 +224,7 @@ def main():
 
 
 
+
             for shift in shifts:
                 if this_scooper in shift["name"].upper():
                     #create an id that will identical, but constant, for each shift to avoid repeat events
