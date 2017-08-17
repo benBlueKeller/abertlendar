@@ -112,7 +112,7 @@ def main():
                         if ishift < len(this_week) and "-" in shift[2]:
                             date, weekday = this_week[ishift]
                             time_str = shift[2].strip()
-                            if " " in time_str and not "@" in time_str: 
+                            if " " in time_str and not "@" in time_str:
                                 time_str, duty = time_str.split(" ", 1)
                             # BUG: ValueError; for format "@ # #:##-{}" start_time will be wrong
                             try:
@@ -124,7 +124,7 @@ def main():
                                     start_hours += 12
                                 start_time = date + timedelta(hours=start_hours, minutes=start_minutes)
                             except ValueError:
-                                pdb.set_trace()
+                                print('WARNING: ValueError while finding shift start time from ' + time_str)
                             try:
                                 end_hours, end_minutes = end_str.split(':', 1)
                                 end_hours = int(end_hours) + 12 # assuming all shifts end in pm
@@ -199,15 +199,12 @@ def main():
                 this_scooper = input("What is your name on the schedule? ")
 
             if not cal_id:
-                count = 0
+                alberlendars = []
                 for cal in cal_list:
                     if cal['summary'].find('alberlendar') > -1:
-                        if count > 0:
-                            for arg in sys.argv:
-                                if arg.find('-') == -1 and cal['summary'].split(' ')[0].find(arg) > -1:
-                                    cal_id = cal['id']
-                        cal_id = cal['id']
-                        count += 1
+                        for arg in sys.argv:
+                            if arg.find('-') == -1 and cal['summary'].split(' ')[0].find(arg) > -1:
+                                cal_id = cal['id']
                 if not cal_id:
                     make_new = input('should I add a new calendar to google?(y/n): ')[0].upper()
                     if make_new == 'Y':
@@ -219,7 +216,7 @@ def main():
                         }
                         cal_service.calendars().insert(body=calendar).execute()
                         pass
-                    elif make_new == 'N':
+                    else:
                         use_primary = input('should I use your primary calendar?(y/n): ')[0].upper()
                         if use_primary == 'Y':
                             cal_id = 'primary'
