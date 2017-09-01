@@ -224,9 +224,10 @@ def main():
 
 
 
-
+            print("scooper: " + this_scooper)
+            import pdb; pdb.set_trace()
             for shift in shifts:
-                if this_scooper in shift["name"].upper():
+                if this_scooper.upper() in shift["name"].upper():
                     #create an id that will identical, but constant, for each shift to avoid repeat events
                     event_id = ('salt' + str(shift['row']) +
                         'shift' + str(shift['start'].toordinal()) +
