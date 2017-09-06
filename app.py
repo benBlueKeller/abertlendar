@@ -49,7 +49,7 @@ def main():
         cal_list = cal_service.calendarList().list().execute()['items']
         cal_id = False
 
-
+    # access sheet and
     for sheet in scheduleSheets:
         if sheet['properties']['title'].find("CURRENT") > -1 or sheet['properties']['title'].find("NEXT") > -1:
             currentSchedule = service.spreadsheets().values().get(
