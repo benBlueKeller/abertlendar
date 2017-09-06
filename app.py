@@ -23,6 +23,8 @@ from util import par_sheet_dict
 flags = None
 
 
+def alberlendar():
+
 
 def main():
 
@@ -49,7 +51,6 @@ def main():
 
 
     for sheet in scheduleSheets:
-        print(sheet['properties'])
         if sheet['properties']['title'].find("CURRENT") > -1 or sheet['properties']['title'].find("NEXT") > -1:
             currentSchedule = service.spreadsheets().values().get(
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
