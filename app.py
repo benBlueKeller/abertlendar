@@ -23,8 +23,6 @@ from util import par_sheet_dict
 flags = None
 
 
-def alberlendar():
-
 
 def main():
 
@@ -68,7 +66,6 @@ def main():
                 this_scooper = input("What is your name on the schedule? ")
 
             if not cal_id:
-                alberlendars = []
                 for cal in cal_list:
                     if cal['summary'].find('alberlendar') > -1:
                         for arg in sys.argv:
@@ -84,7 +81,6 @@ def main():
                             "timeZone": "America/Los_Angeles"
                         }
                         cal_service.calendars().insert(body=calendar).execute()
-                        pass
                     else:
                         use_primary = input('should I use your primary calendar?(y/n): ')[0].upper()
                         if use_primary == 'Y':
