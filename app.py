@@ -33,24 +33,24 @@ def main():
                     'version=v4')
 
 
-    service = discovery.build('sheets', 'v4', http=http,
+    sheets = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
     scheduleId ='1xJcLh9yWGmqu_Blnp4yykb4cSnnus5fU4YoHFqGEf-o'
-    schedule = service.spreadsheets().get(spreadsheetId=scheduleId).execute()
+    schedule = sheets.spreadsheets().get(spreadsheetId=scheduleId).execute()
     scheduleSheets = schedule['sheets']
 
-    cal_service = discovery.build('calendar', 'v3', http=http)
+    google_cal = discovery.build('calendar', 'v3', http=http)
     # TODO: using argv, find or make proper calendar to operate on
     if '--primary' in sys.argv:
         cal_id = 'primary'
     else:
-        cal_list = cal_service.calendarList().list().execute()['items']
+        cal_list = google_cal.calendarList().list().execute()['items']
         cal_id = False
 
     # access sheet and
     for sheet in scheduleSheets:
         if sheet['properties']['title'].find("CURRENT") > -1 or sheet['properties']['title'].find("NEXT") > -1:
-            currentSchedule = service.spreadsheets().values().get(
+            currentSchedule = sheets.spreadsheets().values().get(
                 spreadsheetId=scheduleId, range=sheet['properties']['title']).execute()
             values = currentSchedule.get('values', [])
             schedule = par_sheet_dict(values)
@@ -80,7 +80,7 @@ def main():
                             "summary": capitalize(this_scooper) + "'s alberlendar",
                             "timeZone": "America/Los_Angeles"
                         }
-                        cal_service.calendars().insert(body=calendar).execute()
+                        google_cal.calendars().insert(body=calendar).execute()
                     else:
                         use_primary = input('should I use your primary calendar?(y/n): ')[0].upper()
                         if use_primary == 'Y':
@@ -115,7 +115,7 @@ def main():
                     }
 
 
-                    shared_time_events = cal_service.events().list(calendarId=cal_id, timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
+                    shared_time_events = google_cal.events().list(calendarId=cal_id, timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
                     items = shared_time_events.get('items', [])
                     for shared_event in items:
                         if event['id'] == shared_event['id']:
@@ -127,7 +127,7 @@ def main():
 
 
                     if not exists:
-                        cal_event = cal_service.events().insert(calendarId=cal_id, body=event).execute()
+                        cal_event = google_cal.events().insert(calendarId=cal_id, body=event).execute()
                         print('Event created: {}'.format(cal_event.get('htmlLink')))
 
 if __name__ == '__main__':
