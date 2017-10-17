@@ -71,6 +71,11 @@ def main():
                         for arg in sys.argv:
                             if arg.find('-') == -1 and cal['summary'].split(' ')[0].find(arg) > -1:
                                 cal_id = cal['id']
+                        if not cal_id:
+                            use_this = input('should I use {0}?(y/n): '.format(cal['summary']))[0].upper()
+                            if use_this == 'Y':
+                                cal_id = cal['id']
+
                 if not cal_id:
                     make_new = input('should I add a new calendar to google?(y/n): ')[0].upper()
                     if make_new == 'Y':
@@ -92,11 +97,10 @@ def main():
             print("scooper: " + this_scooper)
             for shift in shifts:
                 if this_scooper.upper() in shift["name"].upper():
-                    #create an id that will identical, but constant, for each shift to avoid repeat events
                     event_id = ('salt' + str(shift['row']) +
-                        'shift' + str(shift['start'].toordinal()) +
-                        str(shift['start'].hour) + str(shift['start'].minute) +
-                        str(shift['end'].hour) + str(shift['end'].minute))
+                                'shift' + str(shift['start'].toordinal()) +
+                                str(shift['start'].hour) + str(shift['start'].minute) +
+                                str(shift['end'].hour) + str(shift['end'].minute))
                     exists = False
 
                     # add PST to timezones
@@ -113,7 +117,6 @@ def main():
                             'dateTime': shift["end"].isoformat()
                         }
                     }
-
 
                     shared_time_events = google_cal.events().list(calendarId=cal_id, timeMin=shift['start'].isoformat(), timeMax=shift['end'].isoformat()).execute()
                     items = shared_time_events.get('items', [])
