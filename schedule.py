@@ -7,11 +7,11 @@ from credentials import get_credentials
 from util import par_sheet
 
 CREDENTIALS = get_credentials()
+# BUG: Attribute error: module has no Attribute 'request'
 HTTP = CREDENTIALS.authorize(httplib2)
 SHEETS = discovery.build('sheets', 'v4', http=HTTP,
                          discoveryServiceUrl='https://sheets.googleapis.com/$discovery/rest?'
                          'version=v4')
-
 class Schedule(list):
     """Schedule turns tabs with 'CURRENT' and 'NEXT' google sheets
         salt & straw schedule into a list of shifts"""
