@@ -12,11 +12,11 @@ class Alberlendar():
         credentials = get_credentials()
         http = credentials.authorize(httplib2.Http())
         sheets = discovery.build('sheets', 'v4', http=http,
-                                 discoveryServiceUrl='https://sheets.googleapis.com/$discovery/rest?'
-                                 'version=v4')
+                                 discoveryServiceUrl='https://sheets.googleapis.com/'
+                                 '$discovery/rest?version=v4')
         calendar = discovery.build('calendar', 'v3', http=http)
         shifts = Schedule(sheets=sheets, schedule_id=schedule_id)
         import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
-    alb = Alberlendar()
+    ALB = Alberlendar()
