@@ -14,7 +14,7 @@ def scooper_match(query_scooper, possible_match):
     return False
 
 
-def par_sheet(values):
+def par_sheet(values, pytz=None):
     shifts = []
     this_week = False
     for irow, row in enumerate(values):
@@ -81,6 +81,9 @@ def par_sheet(values):
                                 end_time = start_time + timedelta(hours=hours_from_start)
                             except ValueError:
                                 end_time = start_time + timedelta(hours=1)
+                        if pytz:
+                            start_time = pytz.localize(start_time)
+                            end_time = pytz.localize(end_time)
                         shifts.append(dict(name = shift[0],
                             length=shift[1],
                             start= start_time,

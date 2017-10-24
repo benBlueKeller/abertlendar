@@ -6,7 +6,7 @@ from util import par_sheet
 class Schedule(list):
     """Schedule takes a sheets apiclient and schedule_id,
     then turns tabs with 'CURRENT' and 'NEXT' into a list of shifts"""
-    def __init__(self, sheets, schedule_id):
+    def __init__(self, sheets, schedule_id, pytz=None):
         super(Schedule, self).__init__()
         spreadsheet = sheets.spreadsheets().get(spreadsheetId=schedule_id).execute()['sheets']
         self.scoopers = set()
@@ -19,7 +19,7 @@ class Schedule(list):
                 schedule = sheets.spreadsheets().values().get(
                     spreadsheetId=schedule_id, range=sheet['properties']['title']).execute()
                 values = schedule.get('values', [])
-                self.extend(par_sheet(values))
+                self.extend(par_sheet(values, pytz))
         for shift in self:
             self.scoopers = self.scoopers.union([shift["name"].upper()])
             if shift["start"] < self.time_min:
