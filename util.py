@@ -3,6 +3,8 @@ from datetime import timedelta
 
 def scooper_match(query_scooper, possible_match):
     query_scooper = query_scooper.upper()
+    if query_scooper.upper() == possible_match.upper():
+        return True
     split_scooper = possible_match.upper().split(' ')
     check = ''
     for i, word in enumerate(split_scooper):
