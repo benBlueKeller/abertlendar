@@ -8,7 +8,7 @@ from util import scooper_match
 
 PST = pytz.timezone('US/Pacific')
 
-class Alberlendar():
+class Alberlendar(object):
     """takes google credentials to parse a google spreadsheets schedule into the calendar"""
     def __init__(self,
                  scooper,
