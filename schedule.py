@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 
 from util import par_sheet
 
@@ -10,8 +11,8 @@ class Schedule(list):
         super(Schedule, self).__init__()
         spreadsheet = sheets.spreadsheets().get(spreadsheetId=schedule_id).execute()['sheets']
         self.scoopers = set()
-        self.time_min = datetime.max
-        self.time_max = datetime.min
+        self.time_min = pytz.localize(datetime.max - timedelta(weeks=1))
+        self.time_max = pytz.localize(datetime.min + timedelta(weeks=1))
 
         for sheet in spreadsheet:
             if (sheet['properties']['title'].find("CURRENT") > -1
