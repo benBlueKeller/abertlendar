@@ -1,6 +1,15 @@
 from datetime import datetime
 from datetime import timedelta
 
+class ScooperError(Exception):
+    """Exception for when given scooper not on schedule"""
+    def __init__(self, scooper, scoopers, message="Scooper given not found on schedule"):
+        super(ScooperError, self).__init__()
+        self.scooper = scooper
+        self.scoopers = scoopers
+        self.message = message
+
+
 def scooper_match(query_scooper, possible_match):
     if isinstance(possible_match, set):
         for scooper in possible_match:
