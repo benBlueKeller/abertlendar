@@ -26,7 +26,7 @@ class Alberlendar(object):
                                                         timeMax=shifts.time_max.isoformat()
                                                        ).execute().get('items', [])
         for shift in shifts:
-            if scooper.upper() in shift["name"].upper():
+            if scooper_match(scooper, shift['name']):
                 event_id = ('salt' + str(shift['row']) +
                             'shift' + str(shift['start'].toordinal()) +
                             str(shift['start'].hour) + str(shift['start'].minute) +
