@@ -2,6 +2,11 @@ from datetime import datetime
 from datetime import timedelta
 
 def scooper_match(query_scooper, possible_match):
+    if isinstance(possible_match, set):
+        for scooper in possible_match:
+            if scooper_match(query_scooper, scooper):
+                return True
+        return False
     query_scooper = query_scooper.upper()
     if query_scooper.upper() == possible_match.upper():
         return True
