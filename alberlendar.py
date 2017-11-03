@@ -10,6 +10,13 @@ PST = pytz.timezone('US/Pacific')
 
 class Alberlendar(object):
     """takes google credentials to parse a google spreadsheets schedule into the calendar"""
+    def find_alberlendars(self):
+        cal_list = self.calendar.calendarList().list().execute()['items'] #pylint: disable=E1101,C0301
+        albs = []
+        for cal in cal_list:
+            if cal['summary'].find('alberlendar') > -1:
+                albs.append(cal)
+        return albs
 
 
     def __init__(self,
