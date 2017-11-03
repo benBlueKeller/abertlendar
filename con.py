@@ -4,7 +4,7 @@ from alberlendar import Alberlendar
 
 def main():
     parser = argparse.ArgumentParser(description='Process name of scoper')
-    parser.add_argument('scooper')
+    parser.add_argument('--scooper', '-s')
     parser.add_argument('--cal_id', '-c')
     parser.add_argument('--primary', '-p', action='store_true')
     args = parser.parse_args()
