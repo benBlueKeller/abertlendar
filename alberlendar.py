@@ -10,6 +10,8 @@ PST = pytz.timezone('US/Pacific')
 
 class Alberlendar(object):
     """takes google credentials to parse a google spreadsheets schedule into the calendar"""
+
+
     def __init__(self,
                  scooper,
                  cal_id,
@@ -19,9 +21,9 @@ class Alberlendar(object):
         sheets = discovery.build('sheets', 'v4', http=http,
                                  discoveryServiceUrl='https://sheets.googleapis.com/'
                                  '$discovery/rest?version=v4')
-        calendar = discovery.build('calendar', 'v3', http=http)
+        self.calendar = discovery.build('calendar', 'v3', http=http)
         shifts = Schedule(sheets=sheets, schedule_id=schedule_id, pytz=PST)
-        events_during_schedule = calendar.events().list(calendarId=cal_id, #pylint: disable=E1101,C0301
+        events_during_schedule = self.calendar.events().list(calendarId=cal_id, #pylint: disable=E1101,C0301
                                                         timeMin=shifts.time_min.isoformat(),
                                                         timeMax=shifts.time_max.isoformat()
                                                        ).execute().get('items', [])
@@ -47,7 +49,7 @@ class Alberlendar(object):
                         exists = True
                         print('ID exists:\n' + shared_event['id'])
                 if not exists:
-                    cal_event = calendar.events().insert(calendarId=cal_id, body=event).execute() #pylint: disable=E1101
+                    cal_event = self.calendar.events().insert(calendarId=cal_id, body=event).execute() #pylint: disable=E1101
                     print('Event created: {}'.format(cal_event.get('htmlLink')))
 
 if __name__ == '__main__':
