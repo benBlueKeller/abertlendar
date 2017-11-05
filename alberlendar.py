@@ -39,9 +39,9 @@ class Alberlendar(object):
         self.calendar = discovery.build('calendar', 'v3', http=http)
         shifts = Schedule(sheets=sheets, schedule_id=schedule_id, pytz=PST)
         events_during_schedule = self.calendar.events().list(calendarId=cal_id, #pylint: disable=E1101,C0301
-                                                        timeMin=shifts.time_min.isoformat(),
-                                                        timeMax=shifts.time_max.isoformat()
-                                                       ).execute().get('items', [])
+                                                             timeMin=shifts.time_min.isoformat(),
+                                                             timeMax=shifts.time_max.isoformat()
+                                                            ).execute().get('items', [])
         for shift in shifts:
             if scooper_match(scooper, shift['name']):
                 event_id = ('salt' + str(shift['row']) +
