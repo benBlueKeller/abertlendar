@@ -24,11 +24,12 @@ class Alberlendar(object):
         for aldar in self.find_alberlendars():
             if aldar['summary'].find(self.scooper) > -1:
                 return aldar
+        return None
 
 
     def __init__(self,
                  scooper,
-                 cal_id,
+                 cal_id=None,
                  schedule_id="1xJcLh9yWGmqu_Blnp4yykb4cSnnus5fU4YoHFqGEf-o"):
         credentials = get_credentials()
         http = credentials.authorize(httplib2.Http())
@@ -42,6 +43,9 @@ class Alberlendar(object):
                                                              timeMin=shifts.time_min.isoformat(),
                                                              timeMax=shifts.time_max.isoformat()
                                                             ).execute().get('items', [])
+        if cal_id is None:
+            if self.scooper_alberlendar() is not None:
+                cal_id = self.scooper_alberlendar()['id']
         for shift in shifts:
             if scooper_match(scooper, shift['name']):
                 event_id = ('salt' + str(shift['row']) +
