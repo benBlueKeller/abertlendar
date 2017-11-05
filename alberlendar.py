@@ -11,12 +11,19 @@ PST = pytz.timezone('US/Pacific')
 class Alberlendar(object):
     """takes google credentials to parse a google spreadsheets schedule into the calendar"""
     def find_alberlendars(self):
+        """return all calendars with 'alberlendar' in summary"""
         cal_list = self.calendar.calendarList().list().execute()['items'] #pylint: disable=E1101,C0301
         albs = []
         for cal in cal_list:
             if cal['summary'].find('alberlendar') > -1:
                 albs.append(cal)
         return albs
+
+    def scooper_alberlendar(self):
+        """of find_alberlendars, return first calendar with this scooper in summary"""
+        for aldar in self.find_alberlendars():
+            if aldar['summary'].find(self.scooper) > -1:
+                return aldar
 
 
     def __init__(self,
@@ -28,6 +35,7 @@ class Alberlendar(object):
         sheets = discovery.build('sheets', 'v4', http=http,
                                  discoveryServiceUrl='https://sheets.googleapis.com/'
                                  '$discovery/rest?version=v4')
+        self.scooper = scooper
         self.calendar = discovery.build('calendar', 'v3', http=http)
         shifts = Schedule(sheets=sheets, schedule_id=schedule_id, pytz=PST)
         events_during_schedule = self.calendar.events().list(calendarId=cal_id, #pylint: disable=E1101,C0301
