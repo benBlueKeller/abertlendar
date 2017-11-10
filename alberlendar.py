@@ -1,3 +1,4 @@
+#pylint: disable=C0325
 from apiclient import discovery
 import httplib2
 import pytz
@@ -26,9 +27,24 @@ class Alberlendar(object):
                 return aldar
         return None
 
+    def create_alberlendar(self):
+        """insert calendar with alberlendar summary into google"""
+        def capitalize(name):
+            """capitalize first letter of string"""
+            return name[0].upper() + name[1:].lower()
+        calendar = {
+            "summary": capitalize(self.scooper) + "'s alberlendar",
+            "timeZone": "America/Los_Angeles"
+        }
+        return self.calendar.calendars().insert(body=calendar).execute() #pylint: disable=E1101
+
     def update_alberlendar(self):
         """make all the shifts that match this scooper into events
-            and if they don't exist, insert into calendar.events()"""
+        and if they don't exist, insert into calendar.events()"""
+        events_during_schedule = self.calendar.events().list(calendarId=self.cal_id, #pylint: disable=E1101,C0301
+                                                             timeMin=self.shifts.time_min.isoformat(), #pylint: disable=C0301
+                                                             timeMax=self.shifts.time_max.isoformat() #pylint: disable=C0301
+                                                            ).execute().get('items', [])
         for shift in self.shifts:
             if scooper_match(self.scooper, shift['name']):
                 event_id = ('salt' + str(shift['row']) +
@@ -46,12 +62,12 @@ class Alberlendar(object):
                     }
                 }
                 exists = False
-                for shared_event in self.events_during_schedule:
+                for shared_event in events_during_schedule:
                     if event['id'] == shared_event['id']:
                         exists = True
                         print('ID exists:\n' + shared_event['id'])
                 if not exists:
-                    cal_event = self.calendar.events().insert(calendarId=self.cal_id, body=event).execute() #pylint: disable=E1101
+                    cal_event = self.calendar.events().insert(calendarId=self.cal_id, body=event).execute() #pylint: disable=E1101,C0301
                     print('Event created: {}'.format(cal_event.get('htmlLink')))
 
     def __init__(self,
@@ -64,16 +80,17 @@ class Alberlendar(object):
                                  discoveryServiceUrl='https://sheets.googleapis.com/'
                                  '$discovery/rest?version=v4')
         self.scooper = scooper
+        self.shifts = Schedule(sheets=sheets, schedule_id=schedule_id, pytz=PST)
         self.calendar = discovery.build('calendar', 'v3', http=http)
         self.cal_id = cal_id
         if self.cal_id is None:
             if self.scooper_alberlendar() is not None:
                 self.cal_id = self.scooper_alberlendar()['id']
-        self.shifts = Schedule(sheets=sheets, schedule_id=schedule_id, pytz=PST)
-        self.events_during_schedule = self.calendar.events().list(calendarId=self.cal_id, #pylint: disable=E1101,C0301
-                                                                  timeMin=self.shifts.time_min.isoformat(), #pylint: disable=C0301
-                                                                  timeMax=self.shifts.time_max.isoformat() #pylint: disable=C0301
-                                                                 ).execute().get('items', [])
+            elif self.scooper.upper() in self.shifts.scoopers:
+                raise Exception("Scooper on schedule but no alberlendar. Please Create")
+            else:
+                raise Exception("No compadibility found for scooper")
+
         self.update_alberlendar()
 
 
@@ -81,5 +98,5 @@ if __name__ == '__main__':
     # ALB = Alberlendar(scooper="Ben",
     #                   cal_id="saltandstraw.com"
     #                   "_jgum8lvp1047r31f1leeq9debg@group.calendar.google.com")
-    ALB = Alberlendar(scooper="Ben",
-                      cal_id=None)
+    ALB = Alberlendar(scooper="Ben")
+    import pdb; pdb.set_trace()
