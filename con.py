@@ -12,12 +12,10 @@ def main():
     if not args.scooper:
         args.scooper = input("What is your name on the schedule?:")
 
-    if not args.cal_id:
-        args.cal_id = input("What is the  google calendar id?:")
+    if args.primary:
+        args.cal_id = 'primary'
 
     return Alberlendar(args.scooper, args.cal_id)
-
-    import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
     main()
