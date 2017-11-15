@@ -86,8 +86,8 @@ class Alberlendar(object):
         if self.cal_id is None:
             if self.scooper_alberlendar() is not None:
                 self.cal_id = self.scooper_alberlendar()['id']
-            elif self.scooper.upper() in self.shifts.scoopers:
-                raise Exception("Scooper on schedule but no alberlendar. Please Create")
+            elif scooper_match(self.scooper, set(self.shifts.scoopers)):
+                self.create_alberlendar()
             else:
                 raise Exception("No compadibility found for scooper")
 
