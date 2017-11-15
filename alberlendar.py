@@ -1,4 +1,6 @@
 #pylint: disable=C0325
+from threading import Event
+
 from apiclient import discovery
 import httplib2
 import pytz
@@ -27,7 +29,7 @@ class Alberlendar(object):
                 return aldar
         return None
 
-    def create_alberlendar(self):
+    def create_alberlendar(self, event):
         """insert calendar with alberlendar summary into google"""
         def capitalize(name):
             """capitalize first letter of string"""
@@ -36,7 +38,8 @@ class Alberlendar(object):
             "summary": capitalize(self.scooper) + "'s alberlendar",
             "timeZone": "America/Los_Angeles"
         }
-        return self.calendar.calendars().insert(body=calendar).execute() #pylint: disable=E1101
+        res = self.calendar.calendars().insert(body=calendar).execute() #pylint: disable=E1101
+        return res
 
     def update_alberlendar(self):
         """make all the shifts that match this scooper into events
@@ -83,14 +86,20 @@ class Alberlendar(object):
         self.shifts = Schedule(sheets=sheets, schedule_id=schedule_id, pytz=PST)
         self.calendar = discovery.build('calendar', 'v3', http=http)
         self.cal_id = cal_id
+        cal_retrieved = Event()
+        cal_retrieved.set()
         if self.cal_id is None:
+            cal_retrieved.clear()
             if self.scooper_alberlendar() is not None:
                 self.cal_id = self.scooper_alberlendar()['id']
+                cal_retrieved.set()
             elif scooper_match(self.scooper, set(self.shifts.scoopers)):
-                self.create_alberlendar()
+                self.create_alberlendar(cal_retrieved)
+                # TODO: set cal_id after creation. is event nescesary?
             else:
                 raise Exception("No compadibility found for scooper")
 
+        cal_retrieved.wait()
         self.update_alberlendar()
 
 
