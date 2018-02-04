@@ -100,6 +100,8 @@ def par_sheet(values, pytz=None):
                         if pytz and (start_time.tzinfo is None
                                 or start_time.tzinfo.utcoffset(start_time) is None):
                             start_time = pytz.localize(start_time)
+                        if pytz and (end_time.tzinfo is None
+                                or end_time.tzinfo.utcoffset(end_time) is None):
                             end_time = pytz.localize(end_time)
                         shifts.append(dict(name = shift[0],
                             length=shift[1],
