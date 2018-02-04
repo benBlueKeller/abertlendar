@@ -97,7 +97,8 @@ def par_sheet(values, pytz=None):
                                 end_time = start_time + timedelta(hours=hours_from_start)
                             except ValueError:
                                 end_time = start_time + timedelta(hours=1)
-                        if pytz:
+                        if pytz and (start_time.tzinfo is None
+                                or start_time.tzinfo.utcoffset(start_time) is None):
                             start_time = pytz.localize(start_time)
                             end_time = pytz.localize(end_time)
                         shifts.append(dict(name = shift[0],
