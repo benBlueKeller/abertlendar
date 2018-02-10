@@ -107,5 +107,7 @@ if __name__ == '__main__':
     # ALB = Alberlendar(scooper="Ben",
     #                   cal_id="saltandstraw.com"
     #                   "_jgum8lvp1047r31f1leeq9debg@group.calendar.google.com")
-    ALB = Alberlendar(scooper="Ben")
-    import pdb; pdb.set_trace()
+    ALB = Alberlendar(scooper="Ben", schedule_id="1KLmZZERz9ZMaSdDnEIxneBdiWDmXNr61RrLUjgZRrsM")
+    import sys
+    import json
+    sys.stdout = json.dumps(ALB)

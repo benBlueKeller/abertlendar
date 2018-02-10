@@ -6,6 +6,7 @@ def main():
     parser = argparse.ArgumentParser(description='Process name of scoper')
     parser.add_argument('--scooper', '-s')
     parser.add_argument('--cal_id', '-c')
+    parser.add_argument('--schedule_id', '-i')
     parser.add_argument('--primary', '-p', action='store_true')
     args = parser.parse_args()
 
@@ -15,7 +16,7 @@ def main():
     if args.primary:
         args.cal_id = 'primary'
 
-    return Alberlendar(args.scooper, args.cal_id)
+    return Alberlendar(args.scooper, args.cal_id, args.schedule_id)
 
 if __name__ == '__main__':
     main()
