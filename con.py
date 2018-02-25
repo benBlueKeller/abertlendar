@@ -1,3 +1,4 @@
+#! /usr/bin/python
 """con is a console application for using Alberlendar"""
 import argparse
 from alberlendar import Alberlendar
@@ -16,7 +17,10 @@ def main():
     if args.primary:
         args.cal_id = 'primary'
 
-    return Alberlendar(args.scooper, args.cal_id, args.schedule_id)
+    return Alberlendar(scooper=args.scooper,
+                       cal_id=args.cal_id,
+                       schedule_id=args.schedule_id)
+
 
 if __name__ == '__main__':
     main()
