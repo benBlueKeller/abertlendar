@@ -1,7 +1,21 @@
 from datetime import datetime
 from datetime import timedelta
 
+class ScooperError(Exception):
+    """Exception for when given scooper not on schedule"""
+    def __init__(self, scooper, scoopers, message="Scooper given not found on schedule"):
+        super(ScooperError, self).__init__()
+        self.scooper = scooper
+        self.scoopers = scoopers
+        self.message = message
+
+
 def scooper_match(query_scooper, possible_match):
+    if isinstance(possible_match, set):
+        for scooper in possible_match:
+            if scooper_match(query_scooper, scooper):
+                return True
+        return False
     query_scooper = query_scooper.upper()
     if query_scooper.upper() == possible_match.upper():
         return True
@@ -83,8 +97,11 @@ def par_sheet(values, pytz=None):
                                 end_time = start_time + timedelta(hours=hours_from_start)
                             except ValueError:
                                 end_time = start_time + timedelta(hours=1)
-                        if pytz:
+                        if pytz and (start_time.tzinfo is None
+                                or start_time.tzinfo.utcoffset(start_time) is None):
                             start_time = pytz.localize(start_time)
+                        if pytz and (end_time.tzinfo is None
+                                or end_time.tzinfo.utcoffset(end_time) is None):
                             end_time = pytz.localize(end_time)
                         shifts.append(dict(name = shift[0],
                             length=shift[1],
