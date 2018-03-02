@@ -54,7 +54,10 @@ def par_sheet(values, pytz=None):
                             date = datetime.strptime("/".join(spl), "%m/%d/%Y")
                             weekdays.append((date, weekday))
                         except ValueError as Err:
-                            import pdb; pdb.set_trace()
+                            if len(weekdays) == 7:
+                                pass
+                            else:
+                                raise Err
                 this_week = weekdays
 
             elif this_week:
