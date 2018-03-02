@@ -50,8 +50,11 @@ def par_sheet(values, pytz=None):
                             spl[0] =  '0' + spl[0]
                         if len(spl[1]) != 2:
                             spl[1] = '0' + spl[1]
-                        date = datetime.strptime("/".join(spl), "%m/%d/%Y")
-                        weekdays.append((date, weekday))
+                        try:
+                            date = datetime.strptime("/".join(spl), "%m/%d/%Y")
+                            weekdays.append((date, weekday))
+                        except ValueError as Err:
+                            import pdb; pdb.set_trace()
                 this_week = weekdays
 
             elif this_week:
