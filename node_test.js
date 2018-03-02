@@ -1,22 +1,24 @@
 
 
-var script = require("path").join(__dirname, "alberlendar.py")
-var child = require("child_process").spawn('python', [script]);
+var script = require("path").join(__dirname, "con.py")
+var salendar = require("child_process").spawn('python', [script]);
 
 function uint8ToString(data) {
   return String.fromCharCode.apply(null, data);
 }
 
-child.stdout.on('data', function(data) {
+salendar.stdout.on('data', function(data) {
   data = uint8ToString(data);
   try {
     JSON.parse(data);
+    console.log("\nYAY")
     console.log(data)
   } catch(e) {
-    console.log("ho")
+    console.log("\nHO")
+    console.log(data)
   }
 })
 
-child.on('error', function(error) {
+salendar.on('error', function(error) {
   console.log(error);
 })
