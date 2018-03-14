@@ -1,6 +1,7 @@
 
 
-var script = require("path").join(__dirname, 'con.py --scooper "Ben" --schedule_id "1yGlxV9xSY6vk_d-WHoE9k18P06zfc7r8j975y5uvlJU"')
+// var script = require("path").join(__dirname, 'con.py --scooper "Ben" --schedule_id "1yGlxV9xSY6vk_d-WHoE9k18P06zfc7r8j975y5uvlJU"')
+var script = require("path").join('python')
 var salendar = require("child_process").spawn('python -u', [script]);
 
 function uint8ToString(data) {

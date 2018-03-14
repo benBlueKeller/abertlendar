@@ -108,6 +108,4 @@ if __name__ == '__main__':
     #                   cal_id="saltandstraw.com"
     #                   "_jgum8lvp1047r31f1leeq9debg@group.calendar.google.com")
     ALB = Alberlendar(scooper="Ben", schedule_id="1KLmZZERz9ZMaSdDnEIxneBdiWDmXNr61RrLUjgZRrsM")
-    import sys
-    import json
-    sys.stdout = json.dumps(ALB)
+    import pdb; pdb.set_trace()
