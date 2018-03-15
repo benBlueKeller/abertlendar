@@ -11,7 +11,7 @@ from util import scooper_match
 
 PST = pytz.timezone('US/Pacific')
 
-class Alberlendar(object):
+class Salendar(object):
     """takes google credentials to parse a google spreadsheets schedule into the calendar"""
     def find_alberlendars(self):
         """return all calendars with 'alberlendar' in summary"""
@@ -107,5 +107,5 @@ if __name__ == '__main__':
     # ALB = Alberlendar(scooper="Ben",
     #                   cal_id="saltandstraw.com"
     #                   "_jgum8lvp1047r31f1leeq9debg@group.calendar.google.com")
-    ALB = Alberlendar(scooper="Ben", schedule_id="1KLmZZERz9ZMaSdDnEIxneBdiWDmXNr61RrLUjgZRrsM")
+    ALB = Salendar(scooper="Ben", schedule_id="1KLmZZERz9ZMaSdDnEIxneBdiWDmXNr61RrLUjgZRrsM")
     import pdb; pdb.set_trace()

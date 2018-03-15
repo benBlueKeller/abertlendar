@@ -1,7 +1,7 @@
 #! /usr/bin/python
 """con is a console application for using Alberlendar"""
 import argparse
-from alberlendar import Alberlendar
+from salendar import Salendar
 
 def main():
     parser = argparse.ArgumentParser(description='Process name of scoper')
@@ -17,7 +17,7 @@ def main():
     if args.primary:
         args.cal_id = 'primary'
 
-    return Alberlendar(scooper=args.scooper,
+    return Salendar(scooper=args.scooper,
                        cal_id=args.cal_id,
                        schedule_id=args.schedule_id)
 
