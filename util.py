@@ -85,6 +85,7 @@ def par_sheet(values, pytz=None):
                             start_hours, start_minutes = start_str.split(':', 1)
                             start_hours = int(start_hours)
                             start_minutes = int(start_minutes)
+                            import pdb; pdb.set_trace()
                             if start_hours < 9: # assuming nine is the ealiest and 8 the latest start
                                 start_hours += 12
                             start_time = date + timedelta(hours=start_hours, minutes=start_minutes)

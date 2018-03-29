@@ -70,7 +70,6 @@ class Salendar(object):
                         exists = True
                         print('ID exists:\n' + shared_event['id'])
                 if not exists:
-                    import pdb; pdb.set_trace()
                     cal_event = self.calendar.events().insert(calendarId=self.cal_id, body=event).execute() #pylint: disable=E1101,C0301
                     print('Event created: {}'.format(cal_event.get('htmlLink')))
 
