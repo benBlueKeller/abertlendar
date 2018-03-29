@@ -70,6 +70,7 @@ class Salendar(object):
                         exists = True
                         print('ID exists:\n' + shared_event['id'])
                 if not exists:
+                    import pdb; pdb.set_trace()
                     cal_event = self.calendar.events().insert(calendarId=self.cal_id, body=event).execute() #pylint: disable=E1101,C0301
                     print('Event created: {}'.format(cal_event.get('htmlLink')))
 
@@ -107,5 +108,5 @@ if __name__ == '__main__':
     # ALB = Alberlendar(scooper="Ben",
     #                   cal_id="saltandstraw.com"
     #                   "_jgum8lvp1047r31f1leeq9debg@group.calendar.google.com")
-    ALB = Salendar(scooper="Ben", schedule_id="1KLmZZERz9ZMaSdDnEIxneBdiWDmXNr61RrLUjgZRrsM")
+    ALB = Salendar(scooper="Ben", schedule_id="1yGlxV9xSY6vk_d-WHoE9k18P06zfc7r8j975y5uvlJU")
     import pdb; pdb.set_trace()
