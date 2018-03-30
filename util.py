@@ -31,7 +31,15 @@ def scooper_match(query_scooper, possible_match):
 
 
 def par_sheet(values, pytz=None):
-    shifts = []
+    class Shifts(list):
+        def on_day(self, date):
+            these = []
+            for shift in self:
+                if ((date.day, date.month, date.year) ==
+                     (shift["start"].day, shift["start"].month, shift["start"].year)):
+                    these.append(shift)
+            return these
+    shifts = Shifts()
     this_week = False
     for irow, row in enumerate(values):
         # look for the first row that has saturday in column A
@@ -85,8 +93,9 @@ def par_sheet(values, pytz=None):
                             start_hours, start_minutes = start_str.split(':', 1)
                             start_hours = int(start_hours)
                             start_minutes = int(start_minutes)
-                            import pdb; pdb.set_trace()
-                            if start_hours < 9: # assuming nine is the ealiest and 8 the latest start
+                            # assuming 4am ealiest start
+                                # >4pm starts have shift before
+                            if start_hours < 4 or bool(shifts.on_day(date)) and shifts.on_day(date)[::-1][0]["start"].hour > start_hours:
                                 start_hours += 12
                             start_time = date + timedelta(hours=start_hours, minutes=start_minutes)
                         except ValueError:
