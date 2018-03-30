@@ -11,8 +11,14 @@ def main():
     parser.add_argument('--primary', '-p', action='store_true')
     args = parser.parse_args()
 
-    if not args.scooper:
-        args.scooper = input("What is your name on the schedule?:")
+    while not args.scooper:
+        try:
+            args.scooper = input("What is your name on the schedule?:")
+        except NameError:
+            print("NameError: try putting quotes around input")
+
+    if not args.schedule_id:
+        args.schedule_id = '1yGlxV9xSY6vk_d-WHoE9k18P06zfc7r8j975y5uvlJU'
 
     if args.primary:
         args.cal_id = 'primary'
