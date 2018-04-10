@@ -17,7 +17,7 @@ def scooper_match(query_scooper, possible_match):
                 return True
         return False
     query_scooper = query_scooper.upper()
-    if query_scooper.upper() == possible_match.upper():
+    if query_scooper == possible_match.upper():
         return True
     split_scooper = possible_match.upper().split(' ')
     check = ''
