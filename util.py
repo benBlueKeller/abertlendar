@@ -11,15 +11,19 @@ class ScooperError(Exception):
 
 
 def scooper_match(query_scooper, possible_match):
-    if isinstance(possible_match, set):
+    if ":" in possible_match:
+        scooper_match(query_scooper, possible_match.split(":"))
+    if isinstance(possible_match, (set, list)):
         for scooper in possible_match:
             if scooper_match(query_scooper, scooper):
                 return True
         return False
+
     query_scooper = query_scooper.upper()
-    if query_scooper == possible_match.upper():
+    possible_match = possible_match.upper()
+    if query_scooper == possible_match:
         return True
-    split_scooper = possible_match.upper().split(' ')
+    split_scooper = possible_match.split(' ')
     check = ''
     for i, word in enumerate(split_scooper):
         if len(check) > 0:
