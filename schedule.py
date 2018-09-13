@@ -15,7 +15,6 @@ class Schedule(list):
         self.time_max = pytz.localize(datetime.min + timedelta(weeks=1))
 
         for sheet in spreadsheet:
-            print(sheet['properties']['title'])
             if (sheet['properties']['title'].upper().find("CURRENT") > -1
                     or sheet['properties']['title'].upper().find("NEXT") > -1):
                 schedule = sheets.spreadsheets().values().get(
