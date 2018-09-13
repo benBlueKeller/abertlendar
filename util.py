@@ -98,8 +98,9 @@ def par_sheet(values, pytz=None):
                             start_hours = int(start_hours)
                             start_minutes = int(start_minutes)
                             # assuming 4am ealiest start
-                                # >4pm starts have shift before
-                            if start_hours < 4 or bool(shifts.on_day(date)) and shifts.on_day(date)[::-1][0]["start"].hour > start_hours:
+                                # >4pm starts have a shift before that starts after noon
+                            if (start_hours < 4 or bool(shifts.on_day(date)) and
+                               shifts.on_day(date)[::-1][0]["start"].hour > 12):
                                 start_hours += 12
                             start_time = date + timedelta(hours=start_hours, minutes=start_minutes)
                         except ValueError:
@@ -123,12 +124,14 @@ def par_sheet(values, pytz=None):
                         if pytz and (end_time.tzinfo is None
                                 or end_time.tzinfo.utcoffset(end_time) is None):
                             end_time = pytz.localize(end_time)
-                        shifts.append(dict(name = shift[0],
-                            length=shift[1],
-                            start= start_time,
-                            end = end_time,
-                            time_str = time_str,
-                            row = irow))
+                        if(start_time > end_time):
+                            raise ValueError("shift parsing created shift start after end")
+                        shifts.append(dict(name=shift[0],
+                                           length=shift[1],
+                                           start=start_time,
+                                           end=end_time,
+                                           time_str=time_str,
+                                           row=irow))
     return shifts
 
 def par_sheet_dict(values):
