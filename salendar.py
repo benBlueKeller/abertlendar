@@ -1,5 +1,6 @@
 #! /usr/bin/python
 #pylint: disable=C0325
+"""Salendar is the class to be used for parseing google sheets and calendar"""
 from threading import Event
 
 from apiclient import discovery
